@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.2.0](https://github.com/SteScho/manubulon-snmp/tree/v2.2.0) (????-??-??)
+[Full Changelog](https://github.com/SteScho/manubulon-snmp/compare/v2.1.0...v2.2.0)
+
+**Fixed bugs:**
+
+- check\_snmp\_storage.pl =\> Fixed get_table() call hangups while querying host with docker filesystems.
+
 ## [2.1.0](https://github.com/dnsmichi/manubulon-snmp/tree/2.1.0) (2017-10-12)
 [Full Changelog](https://github.com/dnsmichi/manubulon-snmp/compare/v2.0.0...2.1.0)
 

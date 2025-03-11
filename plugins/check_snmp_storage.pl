@@ -1,8 +1,9 @@
 #!/usr/bin/perl -w
 ############################## check_snmp_storage ##############
-# Version : 2.1.0
-# Date :  Jun 1 2007
-# Author  : Patrick Proy ( patrick at proy.org)
+# Version : 2.2.0
+# Date : Mar 11 2015
+# Author : Patrick Proy ( patrick at proy.org)
+#          Copyright (C) 2020 Informatyka Boguslawski sp. z o.o. sp.k., https://www.ib.pl/
 # Help : http://nagios.manubulon.com
 # License : GPL - http://www.fsf.org/licenses/gpl.txt
 # TODO :
@@ -595,7 +596,7 @@ if (defined($o_index)) {
     if (version->parse(Net::SNMP->VERSION) < 4) {
         $resultat = $session->get_table($descr_table);
     } else {
-        $resultat = $session->get_table(Baseoid => $descr_table);
+        $resultat = $session->get_table(Baseoid => $descr_table, maxrepetitions => 1);
     }
 }
 
