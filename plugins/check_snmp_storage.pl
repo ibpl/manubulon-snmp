@@ -40,14 +40,6 @@ my $dskTable_used_table       = '1.3.6.1.4.1.2021.9.1.15.';
 my $dskTable_used_high_table  = '1.3.6.1.4.1.2021.9.1.16.';
 my $hrFSTable_fstable         = '1.3.6.1.2.1.25.3.8';
 
-my $dskTable_storage_table = '1.3.6.1.4.1.2021.9.1';
-my $dskTable_index_table   = '1.3.6.1.4.1.2021.9.1.1';
-my $dskTable_descr_table   = '1.3.6.1.4.1.2021.9.1.2';
-my $dskTable_size_table    = '1.3.6.1.4.1.2021.9.1.6.';
-my $dskTable_avail_table   = '1.3.6.1.4.1.2021.9.1.7.';
-my $dskTable_used_table    = '1.3.6.1.4.1.2021.9.1.8.';
-my $hrFSTable_fstable      = '1.3.6.1.2.1.25.3.8';
-
 #Storage types definition  - from /usr/share/snmp/mibs/HOST-RESOURCES-TYPES.txt
 my %hrStorage;
 $hrStorage{"Other"}                 = '1.3.6.1.2.1.25.2.1.1';
