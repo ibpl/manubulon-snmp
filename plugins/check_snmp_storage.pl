@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 ############################## check_snmp_storage ##############
 # Version : 2.2.0
-# Date : Mar 11 2015
+# Date : Mar 11 2025
 # Author : Patrick Proy ( patrick at proy.org)
 #          Copyright (C) 2020 Informatyka Boguslawski sp. z o.o. sp.k., https://www.ib.pl/
 # Help : http://nagios.manubulon.com
