@@ -1,8 +1,9 @@
 #!/usr/bin/perl -w
 ############################## check_snmp_storage ##############
-# Version : 2.1.0
-# Date :  Jun 1 2007
-# Author  : Patrick Proy ( patrick at proy.org)
+# Version : 2.2.0
+# Date : Mar 11 2025
+# Author : Patrick Proy ( patrick at proy.org)
+#          Copyright (C) 2020 Informatyka Boguslawski sp. z o.o. sp.k., https://www.ib.pl/
 # Help : http://nagios.manubulon.com
 # License : GPL - http://www.fsf.org/licenses/gpl.txt
 # TODO :
@@ -31,9 +32,12 @@ my $hrStorageTable_alloc_units       = '1.3.6.1.2.1.25.2.3.1.4.';
 my $dskTable_storage_table = '1.3.6.1.4.1.2021.9.1';
 my $dskTable_index_table = '1.3.6.1.4.1.2021.9.1.1';
 my $dskTable_descr_table = '1.3.6.1.4.1.2021.9.1.2';
-my $dskTable_size_table = '1.3.6.1.4.1.2021.9.1.6.';
-my $dskTable_avail_table = '1.3.6.1.4.1.2021.9.1.7.';
-my $dskTable_used_table = '1.3.6.1.4.1.2021.9.1.8.';
+my $dskTable_size_table = '1.3.6.1.4.1.2021.9.1.11.';
+my $dskTable_size_high_table = '1.3.6.1.4.1.2021.9.1.12.';
+my $dskTable_avail_table = '1.3.6.1.4.1.2021.9.1.13.';
+my $dskTable_avail_high_table = '1.3.6.1.4.1.2021.9.1.14.';
+my $dskTable_used_table = '1.3.6.1.4.1.2021.9.1.15.';
+my $dskTable_used_high_table = '1.3.6.1.4.1.2021.9.1.16.';
 my $hrFSTable_fstable      = '1.3.6.1.2.1.25.3.8';
 
 #Storage types definition  - from /usr/share/snmp/mibs/HOST-RESOURCES-TYPES.txt
@@ -309,7 +313,7 @@ sub check_options {
         't:i'           => \$o_timeout,
         'timeout:i'     => \$o_timeout,
         'u'             => \$o_dsktable,
-        'dsktable64'    => \$o_dsktable,
+        'dsktable'      => \$o_dsktable,
         'm:s'           => \$o_descr,
         'name:s'        => \$o_descr,
         'T:s'           => \$o_type,
@@ -681,7 +685,10 @@ foreach my $key (sort { $$resultat{$a} cmp $$resultat{$b} } keys %$resultat) {
                 $oids[$count_oid++] = $alloc_units . $tindex[$num_int];
             }
             else {
+                $oids[$count_oid++] = $dskTable_size_high_table . $tindex[$num_int];
+                $oids[$count_oid++] = $dskTable_used_high_table . $tindex[$num_int];
                 $oids[$count_oid++] = $dskTable_avail_table . $tindex[$num_int];
+                $oids[$count_oid++] = $dskTable_avail_high_table . $tindex[$num_int];
             }
 
             if (defined($o_writable)) {
@@ -736,10 +743,16 @@ $session->close;
 # Only a few ms left...
 alarm(0);
 
-# dskTable use fixed 1kB unit
 if (defined($o_dsktable)) {
     for (my $i = 0; $i < $num_int; $i++) {
+
+        # dskTable uses fixed 1kB units.
         $$result{ $alloc_units . $tindex[$i] } = 1024;
+
+        # Merge high and low parts of dskTable 64-bit counters.
+        $$result{ $size_table . $tindex[$i] } += $$result{ $dskTable_size_high_table . $tindex[$i] } << 32;
+        $$result{ $used_table . $tindex[$i] } += $$result{ $dskTable_used_high_table . $tindex[$i] } << 32;
+        $$result{ $dskTable_avail_table . $tindex[$i] } += $$result{ $dskTable_avail_high_table . $tindex[$i] } << 32;
     }
 }
 
@@ -785,7 +798,11 @@ for ($i = 0; $i < $num_int; $i++) {
     verb("Writable : " . ($fsaccess_table->{ $tindex[$i] } ? "Yes" : "No")) if (defined($o_writable));
 
     if (   !defined($$result{ $size_table . $tindex[$i] })
+        || (defined($o_dsktable) && !defined($$result{ $dskTable_size_high_table . $tindex[$i] }))
         || !defined($$result{ $used_table . $tindex[$i] })
+        || (defined($o_dsktable) && !defined($$result{ $dskTable_used_high_table . $tindex[$i] }))
+        || (defined($o_dsktable) && !defined($$result{ $dskTable_avail_table . $tindex[$i] }))
+        || (defined($o_dsktable) && !defined($$result{ $dskTable_avail_high_table . $tindex[$i] }))
         || !defined($$result{ $alloc_units . $tindex[$i] }))
     {
         print "Data not fully defined for storage ", $descr[$i], " : UNKNOWN\n";
